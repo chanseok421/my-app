@@ -1,15 +1,20 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
+import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const SECRET = 'your-secret-key';
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  const { email, password } = (await req.json()) as {
+    email: string;
+    password: string;
+  };
+
 
   const user = await prisma.user.findUnique({ where: { email } });
 
-  if (!user || user.password !== password) {
+  if (!user || !(await compare(password, user.password))) {
     return NextResponse.json({ message: '로그인 실패' }, { status: 401 });
   }
 
