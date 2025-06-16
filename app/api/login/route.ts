@@ -18,7 +18,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: '로그인 실패' }, { status: 401 });
   }
 
-  const token = jwt.sign({ email }, SECRET, { expiresIn: '1h' });
+  const tokenPayload = {
+    id: user.id,
+    email: user.email,
+    classRoom: user.classRoom,
+  };
 
+  const token = jwt.sign(tokenPayload, SECRET, { expiresIn: '1h' });
   return NextResponse.json({ token });
 }

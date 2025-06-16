@@ -27,6 +27,7 @@ export default function ReservePage({ params }: { params: { room: string } }) {
   const [reservedHours, setReservedHours] = useState<number[]>([])
   //const [user, setUser] = useState<JWT | null>(null)
   const router = useRouter()
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -47,21 +48,21 @@ export default function ReservePage({ params }: { params: { room: string } }) {
     }
 
     // 예약 정보 불러오기
-    fetch(`/api/reservation?room=${roomNumber}`)
-      .then(res => res.json())
-      .then((data: Reservation[]) => setReservedHours(data.map(r => r.hour)))
-  }, [roomNumber, router])
+    fetch(`/api/reservation?room=${roomNumber}&date=${today}`)
+    .then(res => res.json())
+    .then((data: Reservation[]) => setReservedHours(data.map(r => r.hour)))
+}, [roomNumber, router])
 
-  const handleReserve = async (hour: number) => {
-    const token = localStorage.getItem('token')
-    const res = await fetch('/api/reservation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ room: roomNumber, hour }),
-    })
+const handleReserve = async (hour: number) => {
+  const token = localStorage.getItem('token')
+  const res = await fetch('/api/reservation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ room: roomNumber, hour, date: today }),
+  })
 
     if (res.ok) {
       alert('예약 성공')
