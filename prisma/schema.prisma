@@ -20,3 +20,14 @@ model User {
   name      String
   classRoom Int     // 301~307 중 하나
 }
+
+model Reservation {
+  id      Int      @id @default(autoincrement())
+  date    DateTime
+  hour    Int
+  room    Int
+  userId  Int
+  user    User     @relation(fields: [userId], references: [id])
+
+  @@unique([date, hour, room])
+}

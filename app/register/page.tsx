@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [classRoom, setClassRoom] = useState('301')
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -20,6 +22,7 @@ export default function RegisterPage() {
     if (res.ok) {
       alert('회원가입 성공!')
       // redirect 등
+      router.push('/login')
     } else {
       alert('회원가입 실패')
     }

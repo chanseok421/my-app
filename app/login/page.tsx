@@ -24,6 +24,7 @@ export default function LoginPage() {
     const data = await res.json();
 
     if (res.ok) {
+      localStorage.setItem('token', data.token);
       setMessage('✅ 로그인 성공! 게시판으로 이동 중...');
       setTimeout(() => router.push('/posts'), 1000);
     } else {
