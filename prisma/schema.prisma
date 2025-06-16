@@ -19,6 +19,8 @@ model User {
   password  String
   name      String
   classRoom Int     // 301~307 중 하나
+
+  reservations Reservation[]
 }
 
 model Reservation {
