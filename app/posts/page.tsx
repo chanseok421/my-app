@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 const rooms = [301, 302, 303, 304, 305, 306, 307];
 
@@ -36,13 +37,17 @@ export default function PostsPage() {
         <h2 className="text-xl font-semibold mt-8 mb-2">📅 코칭실 예약하기</h2>
         <div className="grid grid-cols-3 gap-4">
           {rooms.map((room) => (
-            <button
-              key={room}
-              onClick={() => router.push(`/reserve/${room}`)}
-              className="bg-blue-500 text-white py-4 rounded hover:bg-blue-600"
-            >
-              {room}호 코칭실
-            </button>
+            <div key={room} className="flex flex-col items-center">
+              <Image
+                src={`/rooms/${room}.jpg`}
+                alt={`${room}호 코칭실`}
+                width={150}
+                height={150}
+                className="cursor-pointer rounded"
+                onClick={() => router.push(`/reserve/${room}`)}
+              />
+              <span className="mt-2 text-sm">{room}호 코칭실</span>
+            </div>
           ))}
         </div>
       </section>

@@ -28,6 +28,10 @@ export default function ReservePage({ params }: { params: { room: string } }) {
   const router = useRouter()
   const today = new Date().toISOString().split('T')[0];
 
+   const handleLogout = () => {
+    localStorage.removeItem('token')
+    router.push('/login')
+  }
 
   function fetchReservations() {
     fetch(`/api/reservation?room=${roomNumber}&date=${today}`)
@@ -79,7 +83,21 @@ const handleReserve = async (hour: number) => {
   }
 
   return (
-    <div className="p-4">
+     <div className="p-4 space-y-4">
+      <div className="flex justify-between">
+        <button
+          onClick={() => router.push('/posts')}
+          className="bg-gray-200 py-2 px-4 rounded hover:bg-gray-300"
+        >
+          게시판 홈
+        </button>
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+        >
+          로그아웃
+        </button>
+      </div>
       <h1 className="text-xl font-bold">{roomNumber}호 코칭실 예약</h1>
       <div className="grid grid-cols-4 gap-2 mt-4">
         {Array.from({ length: 24 }, (_, i) => {
