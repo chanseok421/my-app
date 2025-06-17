@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import jwt from 'jsonwebtoken' 
+import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from '@/lib/jwt'
+import '@/lib/cron'
 
 const SECRET = JWT_SECRET
 /**
@@ -26,7 +27,7 @@ export async function GET(req: Request) {
       }
     },
     include: {
-        user: { select: { name: true, id: true } }
+      user: { select: { name: true, id: true } }
     }
   })
 
@@ -89,7 +90,6 @@ export async function POST(req: Request) {
       { status: 400 }
     )
   }
-
 
   await prisma.reservation.create({
     data: {
