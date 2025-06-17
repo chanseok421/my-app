@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken' 
+import { JWT_SECRET } from '@/lib/jwt'
 
-const SECRET = process.env.JWT_SECRET || 'fallback-secret'
-
+const SECRET = JWT_SECRET
 /**
  * GET /api/reservation?room=301&date=2024-06-17
  */
