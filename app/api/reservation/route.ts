@@ -26,7 +26,7 @@ export async function GET(req: Request) {
       }
     },
     include: {
-      user: { select: { name: true } }
+        user: { select: { name: true, id: true } }
     }
   })
 
@@ -66,14 +66,30 @@ export async function POST(req: Request) {
       date_hour_room: {
         date: dateObj,
         hour,
-        room
-      }
-    }
+        room,
+      },
+    },
   })
 
   if (existing) {
     return NextResponse.json({ error: '이미 예약된 시간입니다.' }, { status: 400 })
   }
+
+  // 한 계정당 하루 한 번만 예약 가능
+  const userExisting = await prisma.reservation.findFirst({
+    where: {
+      userId: decoded.id,
+      date: dateObj,
+    },
+  })
+
+  if (userExisting) {
+    return NextResponse.json(
+      { error: '이미 예약한 시간이 있습니다.' },
+      { status: 400 }
+    )
+  }
+
 
   await prisma.reservation.create({
     data: {
