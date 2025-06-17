@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken' 
 
 const SECRET = process.env.JWT_SECRET || 'fallback-secret'
 
@@ -14,7 +14,7 @@ export async function GET(req: Request) {
 
   if (!room || !dateStr) {
     return NextResponse.json({ error: 'room과 date 쿼리가 필요합니다.' }, { status: 400 })
-  }
+  }  
 
   const date = new Date(dateStr)
   const reservations = await prisma.reservation.findMany({

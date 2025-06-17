@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { compare } from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const SECRET = 'your-secret-key';
+const SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
 export async function POST(req: Request) {
   const { email, password } = (await req.json()) as {
