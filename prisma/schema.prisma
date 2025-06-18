@@ -33,3 +33,14 @@ model Reservation {
 
   @@unique([date, hour, room])
 }
+
+
+
+model Notice {
+  id        Int      @id @default(autoincrement())
+  room      Int
+  message   String
+  createdAt DateTime @default(now())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}

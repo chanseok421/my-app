@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { jwtDecode } from 'jwt-decode'
 
@@ -21,9 +21,22 @@ type Reservation = {
   }
 }
 
-export default function ReservePage({ params }: { params: { room: string } }) {
-  const roomNumber = parseInt(params.room)
+type Notice = {
+  id: number
+  message: string
+  room: number
+  createdAt: string
+  user: {
+    name: string
+  }
+}
+
+export default function ReservePage({ params }: { params: Promise<{ room: string }> }) {
+  const { room } = use(params)
+  const roomNumber = parseInt(room)
   const [reservations, setReservations] = useState<Reservation[]>([])
+  const [notices, setNotices] = useState<Notice[]>([])
+  const [message, setMessage] = useState('')
   const [user, setUser] = useState<JWT | null>(null)
   const router = useRouter()
   const today = new Date().toISOString().split('T')[0];
@@ -37,6 +50,12 @@ export default function ReservePage({ params }: { params: { room: string } }) {
     fetch(`/api/reservation?room=${roomNumber}&date=${today}`)
       .then((res) => res.json())
       .then((data: Reservation[]) => setReservations(data))
+  }
+
+  function fetchNotices() {
+    fetch(`/api/notice?room=${roomNumber}`)
+      .then((res) => res.json())
+      .then((data: Notice[]) => setNotices(data))
   }
 
   useEffect(() => {
@@ -57,8 +76,9 @@ export default function ReservePage({ params }: { params: { room: string } }) {
       return
     }
 
-    // 예약 정보 불러오기
+    // 예약 정보 및 공지사항 불러오기
     fetchReservations()
+    fetchNotices()
   }, [roomNumber, router])
 
 
@@ -79,6 +99,26 @@ const handleReserve = async (hour: number) => {
     } else {
       const err = await res.json()
       alert(err.error || '예약 실패')
+    }
+  }
+
+  const handlePostNotice = async () => {
+    const token = localStorage.getItem('token')
+    const res = await fetch('/api/notice', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ room: roomNumber, message }),
+    })
+
+    if (res.ok) {
+      setMessage('')
+      fetchNotices()
+    } else {
+      const err = await res.json()
+      alert(err.error || '공지 작성 실패')
     }
   }
 
@@ -128,6 +168,33 @@ const handleReserve = async (hour: number) => {
           )
         })}
       </div>
+
+      <section className="mt-8 space-y-4">
+        <h2 className="text-lg font-semibold">공지사항</h2>
+        <div className="space-y-2">
+          {notices.map((n) => (
+            <div key={n.id} className="border p-2 rounded">
+              <p className="text-sm">{n.message}</p>
+              <p className="text-xs text-gray-500">- {n.user.name}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2">
+          <input
+            value={message} 
+            onChange={(e) => setMessage(e.target.value)}
+            className="flex-1 border rounded px-2 py-1"
+            placeholder="내용을 입력하세요"
+          />
+          <button
+            onClick={handlePostNotice}
+            className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+          >
+            등록
+          </button>
+        </div>
+      </section>
     </div>
   )
 }
