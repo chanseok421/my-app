@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { jwtDecode } from 'jwt-decode'
 
@@ -31,8 +31,9 @@ type Notice = {
   }
 }
 
-export default function ReservePage({ params }: { params: { room: string } }) {
-  const roomNumber = parseInt(params.room)
+export default function ReservePage({ params }: { params: Promise<{ room: string }> }) {
+  const { room } = use(params)
+  const roomNumber = parseInt(room)
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [notices, setNotices] = useState<Notice[]>([])
   const [message, setMessage] = useState('')
@@ -181,7 +182,7 @@ const handleReserve = async (hour: number) => {
 
         <div className="flex gap-2">
           <input
-            value={message}
+            value={message} 
             onChange={(e) => setMessage(e.target.value)}
             className="flex-1 border rounded px-2 py-1"
             placeholder="내용을 입력하세요"
